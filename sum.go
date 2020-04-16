@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 type ResSUM struct {
@@ -30,7 +31,7 @@ func RequestSUM(text string) (string, error) {
 	var resSum ResSUM
 	json.Unmarshal(respBody, &resSum)
 
-	return resSum.Sum_text, nil
+	return strings.Trim(resSum.Sum_text, " "), nil
 }
 
 func SumOnDoc(title, body string) string {

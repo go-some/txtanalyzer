@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 type Entity struct {
@@ -41,12 +42,13 @@ func RequestNER(text string) ([]Entity, error) {
 func filterEntities(entList []Entity) ([]string, []string, []string) {
 	var personList, orgList, prodList []string
 	for _, ent := range entList {
+		txt := strings.ToLower(strings.Trim(ent.Text, " "))
 		if ent.Label == "PERSON" {
-			personList = append(personList, ent.Text)
+			personList = append(personList, txt)
 		} else if ent.Label == "ORG" {
-			orgList = append(orgList, ent.Text)
+			orgList = append(orgList, txt)
 		} else if ent.Label == "PRODUCT" {
-			prodList = append(prodList, ent.Text)
+			prodList = append(prodList, txt)
 		}
 	}
 	return personList, orgList, prodList
