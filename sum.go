@@ -3,6 +3,7 @@ package txtanalyzer
 import (
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 )
@@ -30,4 +31,13 @@ func RequestSUM(text string) (string, error) {
 	json.Unmarshal(respBody, &resSum)
 
 	return resSum.Sum_text, nil
+}
+
+func SumOnDoc(title, body string) string {
+	bodySum, err := RequestSUM(body)
+	if err != nil {
+		log.Fatal(err)
+		bodySum = ""
+	}
+	return bodySum
 }

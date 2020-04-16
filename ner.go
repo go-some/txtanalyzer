@@ -3,6 +3,7 @@ package txtanalyzer
 import (
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 )
@@ -35,4 +36,31 @@ func RequestNER(text string) ([]Entity, error) {
 	json.Unmarshal(respBody, &resNer)
 
 	return resNer.Ent_list, nil
+}
+
+func filterEntities(entList []Entity) ([]string, []string, []string) {
+	var personList, orgList, prodList []string
+	for _, ent := range entList {
+		if ent.Label == "PERSON" {
+			personList = append(personList, ent.Text)
+		} else if ent.Label == "ORG" {
+			orgList = append(orgList, ent.Text)
+		} else if ent.Label == "PRODUCT" {
+			prodList = append(prodList, ent.Text)
+		}
+	}
+	return personList, orgList, prodList
+}
+
+func NEROnDoc(title, body string) ([]Entity, []string, []string, []string) {
+	entitiesInTitle, nerErr1 := RequestNER(title)
+	if nerErr1 != nil {
+		log.Fatal(nerErr1)
+	}
+	entitiesInBody, nerErr2 := RequestNER(body)
+	if nerErr2 != nil {
+		log.Fatal(nerErr2)
+	}
+	personList, orgList, prodList := filterEntities(entitiesInBody)
+	return entitiesInTitle, personList, orgList, prodList
 }
